@@ -15,24 +15,28 @@ export function useJobRealtime(initialJob: AutomationJob) {
     const supabase = createClient();
     if (!supabase) return;
 
-    const channel = supabase
-      .channel(`job-${job.id}-${Math.random()}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'automation_jobs',
-          filter: `id=eq.${job.id}`,
-        },
-        (payload: any) => {
-          setJob(payload.new as AutomationJob);
-        }
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel>;
+
+    supabase.auth.getSession().then(() => {
+      channel = supabase
+        .channel(`job-${job.id}-${Math.random()}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'automation_jobs',
+            filter: `id=eq.${job.id}`,
+          },
+          (payload) => {
+            setJob(payload.new as AutomationJob);
+          }
+        )
+        .subscribe();
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [job.id]);
 

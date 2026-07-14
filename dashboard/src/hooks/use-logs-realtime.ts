@@ -16,28 +16,32 @@ export function useLogsRealtime(jobId: string, initialLogs: AutomationLog[]) {
     const supabase = createClient();
     if (!supabase) return;
 
-    const channel = supabase
-      .channel(`logs-${jobId}-${Math.random()}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'automation_logs',
-          filter: `job_id=eq.${jobId}`,
-        },
-        (payload: any) => {
-          const newLog = payload.new as AutomationLog;
-          if (!seenIds.current.has(newLog.id)) {
-            seenIds.current.add(newLog.id);
-            setLogs((prev) => [...prev, newLog]);
+    let channel: ReturnType<typeof supabase.channel>;
+
+    supabase.auth.getSession().then(() => {
+      channel = supabase
+        .channel(`logs-${jobId}-${Math.random()}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'automation_logs',
+            filter: `job_id=eq.${jobId}`,
+          },
+          (payload: any) => {
+            const newLog = payload.new as AutomationLog;
+            if (!seenIds.current.has(newLog.id)) {
+              seenIds.current.add(newLog.id);
+              setLogs((prev) => [...prev, newLog]);
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [jobId]);
 
