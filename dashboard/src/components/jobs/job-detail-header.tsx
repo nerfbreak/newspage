@@ -42,7 +42,7 @@ export function JobDetailHeader({ initialJob, triggeredByName }: JobDetailHeader
             <Calendar className="w-3 h-3" />
             Created
           </div>
-          <p className="text-sm font-medium">{formatRelative(job.created_at)}</p>
+          <p className="text-sm font-medium" suppressHydrationWarning>{formatRelative(job.created_at)}</p>
         </div>
         <div className="space-y-1">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -58,7 +58,7 @@ export function JobDetailHeader({ initialJob, triggeredByName }: JobDetailHeader
             <Hash className="w-3 h-3" />
             Started
           </div>
-          <p className="text-sm font-medium">{formatDate(job.started_at)}</p>
+          <p className="text-sm font-medium" suppressHydrationWarning>{formatDate(job.started_at)}</p>
         </div>
       </div>
     </div>

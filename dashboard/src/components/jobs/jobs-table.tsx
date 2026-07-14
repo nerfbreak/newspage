@@ -101,13 +101,13 @@ export function JobsTable({ jobs, total, page, limit, userRole }: JobsTableProps
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
+                <td className="px-4 py-3 hidden md:table-cell text-muted-foreground" suppressHydrationWarning>
                   {formatRelative(job.created_at)}
                 </td>
                 <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground">
                   {formatJobDuration(job.started_at, job.finished_at)}
                 </td>
-                <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">
+                <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs" suppressHydrationWarning>
                   {formatDate(job.started_at)}
                 </td>
                 <td className="px-4 py-3">

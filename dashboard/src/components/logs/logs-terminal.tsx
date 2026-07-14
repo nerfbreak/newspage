@@ -133,7 +133,7 @@ export function LogsTerminal({ initialLogs, jobId }: LogsTerminalProps) {
         ) : (
           filteredLogs.map((log) => (
             <div key={log.id} className="flex gap-3 hover:bg-white/5 px-1 -mx-1 rounded py-0.5">
-              <span className="text-muted-foreground/40 shrink-0 w-20">{formatTime(log.created_at)}</span>
+              <span className="text-muted-foreground/40 shrink-0 w-20" suppressHydrationWarning>{formatTime(log.created_at)}</span>
               <span className={cn('shrink-0 w-12 font-semibold', LOG_LEVEL_COLORS[log.level as LogLevel])}>
                 {LOG_LEVEL_LABELS[log.level as LogLevel]}
               </span>
