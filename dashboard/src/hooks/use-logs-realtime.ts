@@ -14,6 +14,7 @@ export function useLogsRealtime(jobId: string, initialLogs: AutomationLog[]) {
 
   useEffect(() => {
     const supabase = createClient();
+    if (!supabase) return;
 
     const channel = supabase
       .channel(`logs-${jobId}`)

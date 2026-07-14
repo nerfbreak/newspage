@@ -13,19 +13,20 @@ export function useJobRealtime(initialJob: AutomationJob) {
 
   useEffect(() => {
     const supabase = createClient();
+    if (!supabase) return;
 
     const channel = supabase
-      .channel(`job-${initialJob.id}`)
+      .channel(`job-${job.id}`)
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
           table: 'automation_jobs',
-          filter: `id=eq.${initialJob.id}`,
+          filter: `id=eq.${job.id}`,
         },
         (payload) => {
-          setJob((prev) => ({ ...prev, ...(payload.new as AutomationJob) }));
+          setJob(payload.new as AutomationJob);
         }
       )
       .subscribe();
@@ -33,7 +34,7 @@ export function useJobRealtime(initialJob: AutomationJob) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [initialJob.id]);
+  }, [job.id]);
 
   // Sync if initialJob changes (e.g. server re-fetch)
   useEffect(() => {
