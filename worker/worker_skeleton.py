@@ -119,7 +119,13 @@ def send_heartbeat():
         urllib.request.urlopen(req, timeout=5)
         logger.debug("Heartbeat sent")
     except Exception as e:
-        logger.warning(f"Heartbeat failed: {e}")
+        body = ""
+        if hasattr(e, "read"):
+            try:
+                body = " - " + e.read().decode()
+            except:
+                pass
+        logger.warning(f"Heartbeat failed: {e}{body}")
 
 
 def claim_next_job() -> dict | None:
@@ -279,7 +285,8 @@ def main():
 
         # Try to claim a job
         job = claim_next_job()
-        if not job:
+        # If the RPC finds no jobs, it might return a dict of nulls, so check for job.get("id")
+        if not job or (isinstance(job, dict) and not job.get("id")):
             logger.debug("No queued jobs. Sleeping…")
             time.sleep(POLL_INTERVAL_SECONDS)
             continue
