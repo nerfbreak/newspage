@@ -34,6 +34,14 @@ export default async function JobDetailPage({ params }: PageProps) {
 
   if (!job) notFound();
 
+  let triggeredByName: string | null = null;
+  if (job.triggered_by) {
+    const { createServiceClient } = await import('@/lib/supabase/server');
+    const supabaseClient = createServiceClient();
+    const { data } = await supabaseClient.from('profiles').select('full_name').eq('id', job.triggered_by).maybeSingle();
+    triggeredByName = data?.full_name ?? null;
+  }
+
   return (
     <div className="space-y-5 max-w-4xl">
       {/* Back */}
@@ -46,7 +54,7 @@ export default async function JobDetailPage({ params }: PageProps) {
       </Link>
 
       {/* Header */}
-      <JobDetailHeader initialJob={job} triggeredByName={null} />
+      <JobDetailHeader initialJob={job} triggeredByName={triggeredByName} />
 
       {/* Progress */}
       <JobProgress initialJob={job} />

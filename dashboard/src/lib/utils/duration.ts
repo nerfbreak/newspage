@@ -3,10 +3,10 @@
  * e.g. 540 -> "9m 0s", 65 -> "1m 5s", 45 -> "45s"
  */
 export function formatDuration(seconds: number): string {
-  if (seconds < 0) return '-';
-  if (seconds < 60) return `${seconds}s`;
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
+  const safeSeconds = Math.max(0, seconds);
+  if (safeSeconds < 60) return `${safeSeconds}s`;
+  const m = Math.floor(safeSeconds / 60);
+  const s = safeSeconds % 60;
   if (m < 60) return `${m}m ${s}s`;
   const h = Math.floor(m / 60);
   const rm = m % 60;
