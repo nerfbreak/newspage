@@ -38,8 +38,6 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-
   // Public paths — no auth required
   const publicPaths = ['/login', '/api/worker/heartbeat', '/api/worker/webhook'];
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
