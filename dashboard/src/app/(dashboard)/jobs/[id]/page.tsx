@@ -25,10 +25,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function JobDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const [job, logs, profile] = await Promise.all([
+  const profile = await getCurrentUserProfile();
+  
+  const [job, logs] = await Promise.all([
     getJobById(id),
     getJobLogs(id),
-    getCurrentUserProfile(),
   ]);
 
   if (!job) notFound();
