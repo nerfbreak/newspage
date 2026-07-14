@@ -17,7 +17,7 @@ export function useLogsRealtime(jobId: string, initialLogs: AutomationLog[]) {
     if (!supabase) return;
 
     const channel = supabase
-      .channel(`logs-${jobId}`)
+      .channel(`logs-${jobId}-${Math.random()}`)
       .on(
         'postgres_changes',
         {

@@ -16,7 +16,7 @@ export function useJobRealtime(initialJob: AutomationJob) {
     if (!supabase) return;
 
     const channel = supabase
-      .channel(`job-${job.id}`)
+      .channel(`job-${job.id}-${Math.random()}`)
       .on(
         'postgres_changes',
         {

@@ -36,7 +36,7 @@ export function LogsTerminal({ initialLogs, jobId }: LogsTerminalProps) {
     if (!jobId) return;
     const supabase = createClient();
     const channel = supabase
-      .channel(`logs-terminal-${jobId}`)
+      .channel(`logs-terminal-${jobId}-${Math.random()}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'automation_logs', filter: `job_id=eq.${jobId}` },
