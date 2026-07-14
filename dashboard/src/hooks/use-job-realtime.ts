@@ -25,7 +25,7 @@ export function useJobRealtime(initialJob: AutomationJob) {
           table: 'automation_jobs',
           filter: `id=eq.${job.id}`,
         },
-        (payload) => {
+        (payload: any) => {
           setJob(payload.new as AutomationJob);
         }
       )

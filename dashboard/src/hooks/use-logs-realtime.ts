@@ -26,7 +26,7 @@ export function useLogsRealtime(jobId: string, initialLogs: AutomationLog[]) {
           table: 'automation_logs',
           filter: `job_id=eq.${jobId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const newLog = payload.new as AutomationLog;
           if (!seenIds.current.has(newLog.id)) {
             seenIds.current.add(newLog.id);
