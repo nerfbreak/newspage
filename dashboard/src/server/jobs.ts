@@ -58,13 +58,7 @@ export async function getJobs(filters: JobFilters = {}): Promise<PaginatedJobs> 
 
   let query = supabase
     .from('automation_jobs')
-    .select(
-      `
-      *,
-      profile:profiles!triggered_by(id, full_name)
-    `,
-      { count: 'exact' }
-    )
+    .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -106,12 +100,7 @@ export async function getRecentJobs(n = 10): Promise<JobWithProfile[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('automation_jobs')
-    .select(
-      `
-      *,
-      profile:profiles!triggered_by(id, full_name)
-    `
-    )
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(n);
 
