@@ -2,6 +2,14 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Extremely fast path for worker API (bypasses Supabase auth client entirely)
+  const workerApiPaths = ['/api/worker/heartbeat', '/api/worker/webhook'];
+  if (workerApiPaths.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
