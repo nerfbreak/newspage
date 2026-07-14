@@ -8,9 +8,16 @@ import { cookies } from 'next/headers';
 export async function createClient() {
   const cookieStore = await cookies();
 
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    console.error("CRITICAL ERROR: Supabase Environment Variables are missing! Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Vercel project settings.");
+  }
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'missing-url',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'missing-key',
+    url || 'https://missing-url.com',
+    key || 'missing-key',
     {
       cookies: {
         getAll() {
