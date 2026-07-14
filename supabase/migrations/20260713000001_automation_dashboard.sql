@@ -43,7 +43,7 @@ create table if not exists public.automation_jobs (
   params jsonb not null default '{}'::jsonb,
   result jsonb,
   error_message text,
-  triggered_by uuid references auth.users(id) on delete set null,
+  triggered_by uuid references public.profiles(id) on delete set null,
   locked_by text,
   cancel_requested boolean not null default false,
   started_at timestamptz,
