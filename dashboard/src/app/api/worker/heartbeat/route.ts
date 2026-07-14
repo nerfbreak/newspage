@@ -35,7 +35,13 @@ export async function POST(request: NextRequest) {
 
   const { worker_id, status, metadata } = parsed.data;
 
-  const supabase = createServiceClient();
+  let supabase;
+  try {
+    supabase = createServiceClient();
+  } catch (e: any) {
+    return apiError('internal_error', e.message || 'Failed to init supabase', 500);
+  }
+
   const { data, error } = await supabase
     .from('worker_heartbeats')
     .upsert(
