@@ -171,13 +171,13 @@ def run_task(job: dict) -> dict:
 
 # ─── Task Handlers (wrap your existing Playwright logic here) ─────────────────
 
+def run_initial_stock(job_id: str, params: dict) -> dict:
+    from playwright_engine import run_initial_stock as _run
+    return _run(job_id, params, write_log, update_job, is_cancel_requested)
+
 def run_inventory_adjustment(job_id: str, params: dict) -> dict:
     """Wrap existing inventory adjustment Playwright logic here."""
     write_log(job_id, "info", "Starting inventory adjustment", {"step": "init"})
-
-    # TODO: Call your existing playwright_engine.py logic here
-    # from playwright_engine import run_inventory_adjustment as _run
-    # result = _run(...)
 
     # Example progress updates — call between major steps
     update_job(job_id, progress=25)
@@ -221,9 +221,7 @@ def run_clearance_stock(job_id: str, params: dict) -> dict:
     return {"summary": "Clearance stock completed"}
 
 
-def run_initial_stock(job_id: str, params: dict) -> dict:
-    write_log(job_id, "info", "Starting initial stock", {"step": "init"})
-    return {"summary": "Initial stock completed"}
+
 
 
 # ─── Custom Exceptions ────────────────────────────────────────────────────────
@@ -271,7 +269,30 @@ def process_job(job: dict):
         )
 
 
+# ─── Render Health Check Server ───────────────────────────────────────────────
+
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        self.wfile.write(b'{"status": "ok", "worker": "running"}')
+    def log_message(self, format, *args):
+        pass # Suppress logs to keep terminal clean
+
+def start_health_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    logger.info(f"Health server started on port {port}")
+
+
 def main():
+    start_health_server()
     logger.info(f"Worker {WORKER_ID} starting…")
     last_heartbeat = 0
 
