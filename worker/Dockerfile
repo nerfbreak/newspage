@@ -1,17 +1,22 @@
-# Gunakan base image resmi dari Microsoft yang sudah terinstall Python & Playwright (bebas dari error dependensi OS)
 FROM mcr.microsoft.com/playwright/python:v1.45.0-jammy
 
-# Buat folder aplikasi
-WORKDIR /app
+# Hugging Face Spaces requires running as a non-root user with UID 1000
+RUN useradd -m -u 1000 user
+USER user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
 
-# Salin file requirements
-COPY requirements.txt /app/
+WORKDIR $HOME/app
 
-# Install dependency Python
+# Copy requirements first to leverage Docker cache
+COPY --chown=user requirements.txt $HOME/app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Salin seluruh kode worker ke dalam container
-COPY . /app/
+# Copy the rest of the worker code
+COPY --chown=user . $HOME/app/
 
-# Jalankan worker
+# Expose port 7860 for Hugging Face Healthcheck
+EXPOSE 7860
+
+# Run the worker
 CMD ["python", "worker_skeleton.py"]

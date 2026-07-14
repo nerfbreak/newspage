@@ -304,7 +304,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         pass # Suppress logs to keep terminal clean
 
 def start_health_server():
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 7860))
     server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
