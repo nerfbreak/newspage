@@ -160,15 +160,15 @@ def run_initial_stock(job_id: str, params: dict, write_log, update_job, is_cance
     def ui_log(level: str, message: str, metadata: dict = None):
         write_log(job_id, level, message, metadata)
 
-    user_id_np = os.environ.get("PORTAL_USERNAME")
-    pass_np = os.environ.get("PORTAL_PASSWORD")
+    user_id_np = params.get("user_id_np")
+    pass_np = params.get("pass_np")
     URL_LOGIN = os.environ.get("PORTAL_URL", "https://rb-id.np.accenture.com/RB_ID/Logon.aspx")
-    selected_distributor = os.environ.get("PORTAL_DISTRIBUTOR", "DEFAULT")
+    selected_distributor = params.get("distributor", "DEFAULT")
     WAREHOUSE = params.get("warehouse", "GOOD_WHS")
     TIMEOUT_MS = 60000
 
     if not user_id_np or not pass_np:
-        raise ValueError("PORTAL_USERNAME and PORTAL_PASSWORD must be set in .env")
+        raise ValueError("PORTAL_USERNAME and PORTAL_PASSWORD were not provided in job params.")
 
     ensure_playwright()
 

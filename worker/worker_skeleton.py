@@ -173,6 +173,26 @@ def run_task(job: dict) -> dict:
 
 def run_initial_stock(job_id: str, params: dict) -> dict:
     from playwright_engine import run_initial_stock as _run
+    distributor = params.get("distributor", "DEFAULT")
+    
+    # Fetch credentials from Supabase
+    write_log(job_id, "info", f"Fetching credentials for {distributor}...", {"step": "init"})
+    res = supabase.table("distributor_vault").select("np_user_id, np_password").eq("nama_distributor", distributor).execute()
+    
+    if not res.data:
+        raise ValueError(f"Credentials not found for distributor: {distributor}")
+        
+    creds = res.data[0]
+    user_id_np = creds.get("np_user_id")
+    pass_np = creds.get("np_password")
+    
+    if not user_id_np or not pass_np:
+        raise ValueError(f"Invalid credentials in vault for {distributor}")
+
+    # Pass credentials directly to the engine via params to avoid breaking signatures
+    params["user_id_np"] = user_id_np
+    params["pass_np"] = pass_np
+    
     return _run(job_id, params, write_log, update_job, is_cancel_requested)
 
 def run_inventory_adjustment(job_id: str, params: dict) -> dict:
