@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { AutomationLog } from '@/types/database';
 import type { LogFilters } from '@/types/jobs';
 
@@ -6,7 +6,7 @@ import type { LogFilters } from '@/types/jobs';
  * Fetch logs with optional filters.
  */
 export async function getLogs(filters: LogFilters = {}): Promise<AutomationLog[]> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   let query = supabase
     .from('automation_logs')

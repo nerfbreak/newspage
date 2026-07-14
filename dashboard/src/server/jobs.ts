@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { todayISO } from '@/lib/utils/date';
 import type { DashboardStats, JobFilters, JobWithProfile, PaginatedJobs } from '@/types/jobs';
 import type { AutomationJob } from '@/types/database';
@@ -8,7 +8,7 @@ import { DEFAULT_PAGE_LIMIT } from '@/lib/constants/statuses';
  * Fetch dashboard summary stats.
  */
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
   const today = todayISO();
 
   const [jobsToday, running, success, failed, latest] = await Promise.all([
@@ -51,7 +51,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
  * Fetch paginated job list with optional filters.
  */
 export async function getJobs(filters: JobFilters = {}): Promise<PaginatedJobs> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
   const page = filters.page ?? 1;
   const limit = filters.limit ?? DEFAULT_PAGE_LIMIT;
   const offset = (page - 1) * limit;
@@ -82,7 +82,7 @@ export async function getJobs(filters: JobFilters = {}): Promise<PaginatedJobs> 
  * Fetch a single job by ID.
  */
 export async function getJobById(id: string): Promise<AutomationJob | null> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from('automation_jobs')
     .select('*')
@@ -97,7 +97,7 @@ export async function getJobById(id: string): Promise<AutomationJob | null> {
  * Fetch recent jobs for dashboard (last N jobs).
  */
 export async function getRecentJobs(n = 10): Promise<JobWithProfile[]> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from('automation_jobs')
     .select('*')
